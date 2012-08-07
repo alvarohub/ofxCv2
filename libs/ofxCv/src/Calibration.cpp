@@ -72,12 +72,17 @@ namespace ofxCv {
                   nearDist * (-cx) / fx, nearDist * (w - cx) / fx,
                   nearDist * (cy - h) / fy, nearDist * (cy) / fy,
                   nearDist, farDist);
-		//glMatrixMode(GL_MODELVIEW);
-		//glLoadIdentity();
-		//gluLookAt(
-        //          0, 0, 0,   // position of camera
-        //          0, 0, 1,   // looking towards the point (0,0,1) 
-        //          0, -1, 0); // orientation
+		// in OpenGL the positive direction of axis-Y is from bottom to up, opposite to 
+        // the one used in image plane, so you need invert it in MODEL_VIEW (but I would 
+        // prefer not doing this here - the function is meant to set the PERSPECTIVE matrix 
+        // only, and any call to glLoadIdentity by the user on GL_MODELVIEW will "forget" 
+        // this inversion...
+        glMatrixMode(GL_MODELVIEW);
+		glLoadIdentity();
+		gluLookAt(
+                  0, 0, 0,   // position of camera
+                  0, 0, 1,   // looking towards the point (0,0,1) 
+                  0, -1, 0); // orientation
 	}
     
     // ============= CALIBRATIONSHAPE CLASS=================================================================================================
@@ -333,7 +338,7 @@ namespace ofxCv {
                 if(img.type() != CV_8UC1) {
                     cvtColor(img, procImg, CV_RGB2GRAY);
                 } 
-                threshold(procImg, procImg, 210, 255, THRESH_BINARY_INV);
+                threshold(procImg, procImg, 200, 255, THRESH_BINARY_INV);
                 erode(procImg, procImg, Mat());
                 dilate(procImg, procImg, Mat());          
                 dilate(procImg, procImg, Mat());
