@@ -12,66 +12,6 @@ namespace ofxCv {
 	
 	using namespace cv;
 	
-	// 1 utility functions
-	// for toCv/toOf the function signature reveals the behavior:
-	// 1       Type& argument // shallow copy of the data
-	// 2 const Type& argument // deep copy of the data
-	// 3       Type  argument // deep copy of the data
-	// style 1 is used when possible (for Mat conversion). style 2 is used when
-	// dealing with a lot of data that can't/shouldn't be shallow copied. style 3
-	// is used for small objects where the compiler can optimize the copying if
-	// necessary. the reference is avoided to make inline toCv/toOf use easier.
-	
-	// toCv functions
-	Mat toCv(Mat& mat);
-	template <class T> inline Mat toCv(ofPixels_<T>& pix) {
-		return Mat(pix.getHeight(), pix.getWidth(), getCvImageType(pix), pix.getPixels(), 0);
-	}
-	template <class T> inline Mat toCv(ofImage_<T>& img) {
-		return Mat(img.getHeight(), img.getWidth(), getCvImageType(img), img.getPixels(), 0);
-	}
-	Mat toCv(ofBaseHasPixels& img);
-	Mat toCv(ofMesh& mesh);
-	Point2f toCv(ofVec2f vec);
-	Point3f toCv(ofVec3f vec);
-     //Point2f toCv(ofVec3f vec); // this seems needed because ofPoint is ofVec3f, but I cannot overload a funciton by its return type...
-	cv::Rect toCv(ofRectangle rect);
-	vector<cv::Point2f> toCv(const ofPolyline& polyline);
-	Scalar toCv(ofColor color); // might need more for other color types?
-	
-	// toOf functions
-	ofVec2f toOf(Point2f point);
-	ofVec3f toOf(Point3f point);
-	ofRectangle toOf(cv::Rect rect);
-	ofPolyline toOf(cv::RotatedRect rect);
-	template <class T> inline ofPolyline toOf(const vector<cv::Point_<T> >& contour) {
-		ofPolyline polyline;
-		polyline.resize(contour.size());
-		for(int i = 0; i < contour.size(); i++) {
-			polyline[i].x = contour[i].x;
-			polyline[i].y = contour[i].y;
-		}
-		polyline.close();
-		return polyline;
-	}
-    // to add: toOF for meshes:
-    /*
-    template <class T> inline ofMesh toOf(const vector<cv::Point_<T> >& contour) {
-		ofPolyline polyline;
-		polyline.resize(contour.size());
-		for(int i = 0; i < contour.size(); i++) {
-			polyline[i].x = contour[i].x;
-			polyline[i].y = contour[i].y;
-		}
-		polyline.close();
-		return polyline;
-	}
-     */
-	template <class T>
-	void toOf(Mat mat, ofPixels_<T>& pixels) {
-		pixels.setFromExternalPixels(mat.ptr<T>(), mat.cols, mat.rows, mat.channels());
-	}
-	
 	// these functions are for accessing Mat, ofPixels and ofImage consistently.
 	// they're very important for imitate().
 	
@@ -178,6 +118,66 @@ namespace ofxCv {
 	float getMaxVal(const Mat& mat);
 	int getTargetChannelsFromCode(int conversionCode);
 	
+	// 1 utility functions
+	// for toCv/toOf the function signature reveals the behavior:
+	// 1       Type& argument // shallow copy of the data
+	// 2 const Type& argument // deep copy of the data
+	// 3       Type  argument // deep copy of the data
+	// style 1 is used when possible (for Mat conversion). style 2 is used when
+	// dealing with a lot of data that can't/shouldn't be shallow copied. style 3
+	// is used for small objects where the compiler can optimize the copying if
+	// necessary. the reference is avoided to make inline toCv/toOf use easier.
+	
+	// toCv functions
+	Mat toCv(Mat& mat);
+	template <class T> inline Mat toCv(ofPixels_<T>& pix) {
+		return Mat(pix.getHeight(), pix.getWidth(), getCvImageType(pix), pix.getPixels(), 0);
+	}
+	template <class T> inline Mat toCv(ofImage_<T>& img) {
+		return Mat(img.getHeight(), img.getWidth(), getCvImageType(img), img.getPixels(), 0);
+	}
+	Mat toCv(ofBaseHasPixels& img);
+	Mat toCv(ofMesh& mesh);
+	Point2f toCv(ofVec2f vec);
+	Point3f toCv(ofVec3f vec);
+    //Point2f toCv(ofVec3f vec); // this seems needed because ofPoint is ofVec3f, but I cannot overload a funciton by its return type...
+	cv::Rect toCv(ofRectangle rect);
+	vector<cv::Point2f> toCv(const ofPolyline& polyline);
+	Scalar toCv(ofColor color); // might need more for other color types?
+	
+	// toOf functions
+	ofVec2f toOf(Point2f point);
+	ofVec3f toOf(Point3f point);
+	ofRectangle toOf(cv::Rect rect);
+	ofPolyline toOf(cv::RotatedRect rect);
+	template <class T> inline ofPolyline toOf(const vector<cv::Point_<T> >& contour) {
+		ofPolyline polyline;
+		polyline.resize(contour.size());
+		for(int i = 0; i < contour.size(); i++) {
+			polyline[i].x = contour[i].x;
+			polyline[i].y = contour[i].y;
+		}
+		polyline.close();
+		return polyline;
+	}
+    // to add: toOF for meshes:
+    /*
+     template <class T> inline ofMesh toOf(const vector<cv::Point_<T> >& contour) {
+     ofPolyline polyline;
+     polyline.resize(contour.size());
+     for(int i = 0; i < contour.size(); i++) {
+     polyline[i].x = contour[i].x;
+     polyline[i].y = contour[i].y;
+     }
+     polyline.close();
+     return polyline;
+     }
+     */
+	template <class T>
+	void toOf(Mat mat, ofPixels_<T>& pixels) {
+		pixels.setFromExternalPixels(mat.ptr<T>(), mat.cols, mat.rows, mat.channels());
+	}
+
 	// cross-toolkit, cross-bitdepth copying
 	// should this do conversion? or should be handle conversion in convertColor?
 	// or convert that handles color or bitdepth?
